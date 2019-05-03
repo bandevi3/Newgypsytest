@@ -1,0 +1,84 @@
+
+
+    CPUs = Threads per core X cores per socket X sockets
+
+CPUs are what you see when you run htop (these do not equate to physical CPUs).
+
+Here is an example from a desktop machine:
+
+$ lscpu | egrep '^Thread|^Core|^Socket|^CPU\('
+CPU(s):                8
+Thread(s) per core:    2
+Core(s) per socket:    4
+Socket(s):             1
+
+And a server:
+
+$ lscpu | egrep '^Thread|^Core|^Socket|^CPU\('
+CPU(s):                32
+Thread(s) per core:    2
+Core(s) per socket:    8
+Socket(s):             2
+
+The output of nproc corresponds to the CPU count from lscpu. For the desktop machine above this should match the 8 CPU(s) reported by lscpu:
+
+$ nproc --all
+8
+
+The output of /proc/cpuinfo should match this information, for example on the desktop system above we can see there are 8 processors (CPUs) and 4 cores (core id 0-3):
+
+$ egrep 'processor|core id' /proc/cpuinfo
+processor   : 0
+core id     : 0
+processor   : 1
+core id     : 0
+processor   : 2
+core id     : 1
+processor   : 3
+core id     : 1
+processor   : 4
+core id     : 2
+processor   : 5
+core id     : 2
+processor   : 6
+core id     : 3
+processor   : 7
+core id     : 3
+
+
+ grep -m 1 'cpu cores' /proc/cpuinfo
+cpu cores   : 4
+
+To specifically answer your question you tell how many cores you have by multiplying the number of cores you have per socket by the number of sockets you have.
+
+    Cores = Cores per socket X Sockets
+
+For the example systems above the desktop has 4 cores:
+
+$ echo Cores = $(( $(lscpu | awk '/^Socket/{ print $2 }') * $(lscpu | awk '/^Core/{ print $4 }') ))
+Cores = 4
+
+While the server has 16:
+
+$ echo Cores = $(( $(lscpu | awk '/^Socket/{ print $2 }') * $(lscpu | awk '/^Core/{ print $4 }') ))
+Cores = 16
+
+Another useful utility is dmidecode which outputs per socket information. In the case of the server system listed above we expect to see 8 cores per socket and 16 threads per socket:
+
+$ sudo dmidecode -t 4 | egrep 'Socket Designation|Count'
+    Socket Designation: CPU1
+    Core Count: 8
+    Thread Count: 16
+    Socket Designation: CPU2
+    Core Count: 8
+    Thread Count: 16
+
+In summary:
+
+    You need to be aware of sockets, cores and threads
+    You need to be careful of the term CPU as it means different things in different contexts
+=======================================
+lsblk
+nproc
+lscpu | egrep '^Thread|^Core|^Socket|^CPU\('
+cat /proc/meminfo
