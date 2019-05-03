@@ -1,0 +1,84 @@
+#!/bin/bash
+#This script will perform activity of logical pic
+#Authour: 
+
+a=`hostname`
+b=`hostname -i`
+c=`dmidecode -s system-serial-number | tail -1`
+d=`dmidecode | grep Manufacturer | head -1 | awk '{print $2}'`
+e=`dmidecode | grep "Product Name" | cut -d : -f2`
+f=`dmidecode | grep "Socket Designation: Proc " | wc -l`
+g=`dmidecode | grep "Core Count" | head -1 | awk '{print $3}'`
+h=`dmidecode | grep "Core Enabled" | head -1 | awk '{print $3}'`
+i=`dmidecode | grep "Thread Count" | head -1 | awk '{print $3}'`
+k=`free -g | grep Mem | awk '{print $2}'`
+l=`echo "ctrl slot=0 show config" | hpacucli`
+m=`cat /etc/redhat-release`
+n=`uname -a | awk '{print $12}'` 
+o=`date`
+p=`systool -c fc_host -v | egrep 'port_name|Device path|port_state'` 
+q=`echo "ctrl slot=0 show config"|hpacucli`
+r=`cat /etc/hosts`
+s=`cat /etc/resolv.conf`
+t=`fdisk -l`
+u=`cat /etc/modprobe.conf | grep bond`
+v=`cat /etc/sysconfig/network-scripts/ifcfg-eth0`
+w=`cat /etc/sysconfig/network-scripts/ifcfg-eth1`
+x=`cat /etc/sysconfig/network-scripts/ifcfg-eth2`
+y=`cat /etc/sysconfig/network-scripts/ifcfg-eth3`
+z=`cat /etc/sysconfig/network-scripts/ifcfg-eth4`
+aa=`cat /etc/sysconfig/network-scripts/ifcfg-eth5`
+bb=`cat /etc/sysconfig/network-scripts/ifcfg-bond0`
+cc=`cat /etc/sysconfig/network-scripts/ifcfg-bond1`
+dd=`ps -ef | grep lc | wc -l`
+ee=`ps -ef | grep esm | wc -l`
+ff=`ps -ef | grep snmp | wc -l`
+
+
+echo -e "Hostname      :  \e[32m$a\e[0m\n"
+echo -e "HostIP        :  \e[32m$b\e[0m\n"
+echo -e "SerialNo      :  \e[32m$c\e[0m\n"
+echo -e "Manufacturer  :  \e[32m$d\e[0m\n"
+echo -e "MakeModel     :  \e[32m$e\e[0m\n"
+echo -e "Processors    :  \e[32m$f\e[0m\n"
+echo -e "CoreType      :  \e[32m$g/$h  $i threads\e[0m\n"
+echo -e "Memory        :  \e[32m$k GB\e[0m\n"
+echo -e "OS            :  \e[32m$m\e[0m\n"
+echo -e "OSArchx       :  \e[32m$n\e[0m\n"
+echo -e "Date          :  \e[32m$o\e[0m\n"
+echo -e "SAN           :  \e[32m$p\e[0m\n"
+echo -e "PCI Slots     :  \e[32m$q\e[0m\n"
+echo -e "RAID          :  \e[32m$l\e[0m\n"
+echo -e "HostFile      :  \e[32m$r\e[0m\n"
+echo -e "ResolvFile    :  \e[32m$s\e[0m\n"
+echo -e "DiskLayout    :  \e[32m$t\e[0m\n"
+echo -e "Bonding       :  \e[32m$u\e[0m\n"
+echo -e "Eth0          :  \e[32m$v\e[0m\n"
+echo -e "Eth1          :  \e[32m$w\e[0m\n"
+echo -e "Eth2          :  \e[32m$x\e[0m\n"
+echo -e "Eth3          :  \e[32m$y\e[0m\n"
+echo -e "Eth4          :  \e[32m$z\e[0m\n"
+echo -e "Eth5          :  \e[32m$aa\e[0m\n"
+echo -e "Bond0         :  \e[32m$bb\e[0m\n"
+echo -e "Bond1         :  \e[32m$cc\e[0m\n"
+
+export Tivoli="\[$(tput setaf 1)\]\u@\h:\w $ \[$(tput sgr0)\]"
+if [ $dd -gt 1 ] ; then
+echo -e "Tivoli        :  \e[32mRunning\e[0m\n"
+else
+echo -e "Tivoli        :  \e[32mNot Running\e[0m\n"
+fi
+
+if [ $ee -gt 1 ] ; then
+echo -e "ESM           :  \e[32mRunning\e[0m\n"
+else
+echo -e "ESM           :  \e[32mNot Running\e[0m\n"
+fi
+
+if [ $ff -gt 1 ] ; then
+echo -e "SNMP          :  \e[32mRunning\e[0m\n"
+else
+echo -e "SNMP          :  \e[32mNot Running\e[0m\n"
+fi
+
+
